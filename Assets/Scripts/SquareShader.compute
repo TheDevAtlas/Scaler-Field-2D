@@ -1,0 +1,243 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Triangle {
+    float3 cv;
+    float3 bv;
+    float3 av;
+};
+
+AppendStructuredBuffer<Triangle> triangles;
+float valueCutoff;
+RWTexture2D<float4> valueTexture;
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    // Get The Values Of The Current Square //
+    float bl = valueTexture[id.xy].r;
+    float br = valueTexture[id.xy + int2(1, 0)].r;
+    float tl = valueTexture[id.xy + int2(0, 1)].r;
+    float tr = valueTexture[id.xy + int2(1, 1)].r;
+
+    // Get The Index To Generate The Mesh //
+    int caseIndex = 0;
+    if(bl >= valueCutoff){
+        caseIndex += 1;
+    }
+    if(br >= valueCutoff){
+        caseIndex += 2;
+    }
+    if(tl >= valueCutoff){
+        caseIndex += 4;
+    }
+    if(tr >= valueCutoff){
+        caseIndex += 8;
+    }
+
+    // Create Vertexs For Triangle(s) //
+    // One Triangle Cases //
+    if (caseIndex == 1) { // BL
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri1);
+    }
+    if (caseIndex == 2) { // BR
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri2.bv = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri2.cv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri2);
+    }
+    if (caseIndex == 4) { // TL
+        Triangle tri3;
+        tri3.av = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri3.bv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        tri3.cv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri3);
+    }
+    if (caseIndex == 8) { // TR
+        Triangle tri4;
+        tri4.av = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        tri4.bv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        tri4.cv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri4);
+    }
+
+    // Two Triangle Cases //
+    // Side Mesh //
+    if (caseIndex == 3) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri2.bv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        tri2.cv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri2);
+    }
+    if (caseIndex == 5) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri2.bv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri2.cv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri2);
+    }
+    if (caseIndex == 10) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri2.bv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri2.cv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri2);
+    }
+    if (caseIndex == 12) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri2.bv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        tri2.cv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri2);
+    }
+    // Diag Mesh //
+    if (caseIndex == 6) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri2.bv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        tri2.cv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri2);
+    }
+    if (caseIndex == 9) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        tri2.bv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        tri2.cv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri2);
+    }
+    // Full Cover Mesh //
+    if (caseIndex == 15) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri2.bv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri2.cv = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri2);
+    }
+
+    // Three Triangle Mesh //
+    if (caseIndex == 7) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        tri2.bv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        tri2.cv = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri2);
+
+        Triangle tri3;
+        tri3.av = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri3.bv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        tri3.cv = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri3);
+    }
+    if (caseIndex == 11) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri1.bv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri2.bv = float3(id.x + 0.5f, id.y + 1.0f, 0.0f);
+        tri2.cv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri2);
+
+        Triangle tri3;
+        tri3.av = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        tri3.bv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        tri3.cv = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri3);
+    }
+    if (caseIndex == 13) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.0f, id.y + 0.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri2.bv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri2.cv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri2);
+
+        Triangle tri3;
+        tri3.av = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri3.bv = float3(id.x + 1.0f, id.y + 0.5f, 0.0f);
+        tri3.cv = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        triangles.Append(tri3);
+    }
+    if (caseIndex == 14) {
+        Triangle tri1;
+        tri1.av = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri1.bv = float3(id.x + 0.0f, id.y + 1.0f, 0.0f);
+        tri1.cv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        triangles.Append(tri1);
+
+        Triangle tri2;
+        tri2.av = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri2.bv = float3(id.x + 0.0f, id.y + 0.5f, 0.0f);
+        tri2.cv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri2);
+
+        Triangle tri3;
+        tri3.av = float3(id.x + 1.0f, id.y + 1.0f, 0.0f);
+        tri3.bv = float3(id.x + 0.5f, id.y + 0.0f, 0.0f);
+        tri3.cv = float3(id.x + 1.0f, id.y + 0.0f, 0.0f);
+        triangles.Append(tri3);
+    }
+    
+}
