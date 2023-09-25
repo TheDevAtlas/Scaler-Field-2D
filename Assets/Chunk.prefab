@@ -56,6 +56,7 @@ MonoBehaviour:
   chunkOffset: {x: 0, y: 0}
   marchingSquares: {fileID: 7200000, guid: 5b0be12d304014343ad47c7b7f47a661, type: 3}
   valueTexture: {fileID: 0}
+  newValues: {fileID: 0}
   updateMesh: 0
 --- !u!33 &3471628471418157421
 MeshFilter:
@@ -85,7 +86,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 07bd2557a72218843b982b01d56a0d47, type: 2}
+  - {fileID: 2100000, guid: befcfbc3f11c80c4c93a9734161021a7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

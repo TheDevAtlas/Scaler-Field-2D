@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MarchingSquares.sln"
+    "dotnet.defaultSolution": "ScalerField2D-main.sln"
 }
