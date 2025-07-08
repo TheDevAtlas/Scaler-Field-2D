@@ -8,8 +8,6 @@ Marching squares is an algorithm that can take a field of points and generate a 
 
 This project had me optimize my code using the GPU to parallelize the process of calculating a mesh. My implementation allows for thousands of triangles to be generated and manipulated in real time, maintaining smooth frame rates and enabling complex terrain interactions without compromising performance.
 
-Read my article on the subject on [TheDevAtlas.com](https://www.thedevatlas.com/the-log/polygonization-of-a-scaler-field-in-real-time)
-
 ---
 
 <div align="center">
